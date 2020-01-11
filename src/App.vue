@@ -16,7 +16,6 @@
 </template>
 
 <script>
-//import InventoryStore from "./";
 import Inventory from "./components/Inventory";
 
 export default {
@@ -24,10 +23,6 @@ export default {
 
   components: {
     Inventory
-  },
-
-  data: () => ({
-    //
-  })
+  }
 };
 </script>

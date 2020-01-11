@@ -1,13 +1,7 @@
 <template>
   <v-container>
     <v-layout justify-center wrap>
-      <v-data-table
-        dense
-        :headers="headers"
-        :items="products"
-        sort-by="name"
-        class="elevation-1"
-      >
+      <v-data-table dense :headers="headers" :items="products" sort-by="name" class="elevation-1">
         <template v-slot:top>
           <v-toolbar flat color="white">
             <v-toolbar-title>Manage Product</v-toolbar-title>
@@ -22,8 +16,7 @@
                   class="mb-2"
                   v-on="on"
                   @click="editFlag = false"
-                  >New Product</v-btn
-                >
+                >New Product</v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -48,16 +41,10 @@
                         ></v-text-field>
                       </v-col>
                       <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.stock"
-                          label="# of Stock"
-                        ></v-text-field>
+                        <v-text-field v-model="editedItem.stock" label="# of Stock"></v-text-field>
                       </v-col>
                       <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.price"
-                          label="Price"
-                        ></v-text-field>
+                        <v-text-field v-model="editedItem.price" label="Price"></v-text-field>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -65,9 +52,7 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close"
-                    >Cancel</v-btn
-                  >
+                  <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
                   <v-btn color="blue darken-1" text @click="save()">Save</v-btn>
                 </v-card-actions>
               </v-card>
@@ -79,7 +64,7 @@
           <v-icon small @click="deleteItem(item)">delete</v-icon>
         </template>
         <template v-slot:no-data>
-          <v-btn color="primary" @click="initialize">Reset</v-btn>
+          <v-btn color="primary">Reset</v-btn>
         </template>
       </v-data-table>
     </v-layout>
@@ -88,7 +73,8 @@
 
 <script>
 import { db } from "../firebase";
-//import { mapGetters, mapActions } from "vuex";
+import { mapState } from "vuex";
+
 export default {
   data() {
     return {
@@ -107,8 +93,6 @@ export default {
         { text: "Price", value: "price" },
         { text: "Actions", value: "action", sortable: false }
       ],
-
-      products: [],
       editedItem: {
         name: "",
         description: "",
@@ -124,19 +108,18 @@ export default {
     };
   },
 
-  firestore() {
-    return {
-      products: db.collection("product").orderBy("name")
-    };
-  },
-
   watch: {
     dialog(val) {
       val || this.close();
     }
   },
 
+  created() {
+    this.$store.dispatch("setProductRef");
+  },
+
   computed: {
+    ...mapState(["products"]),
     formTitle() {
       return this.editFlag ? "Edit Item" : "Add Product";
     }
@@ -170,6 +153,7 @@ export default {
             console.log("product updated");
           });
       } else {
+        // add new product
         db.collection("product")
           .add(this.editedItem)
           .then(docRef => {
